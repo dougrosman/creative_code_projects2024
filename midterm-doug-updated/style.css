@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+}
+
+
+canvas {
+  /* DOUG 1: took the background out, and made sure that the canvas was centered on the screen */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+}
+
+/* ^ style section from tutorialspoint: https://www.tutorialspoint.com/html5-canvas-fit-to-window#:~:text=Width%20and%20height%20of%20canvas,and%20width%20value%20to%20100%25. */
