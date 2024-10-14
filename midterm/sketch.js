@@ -31,6 +31,9 @@ let things = [];
 
 let robotState;
 
+
+let robotPosition; // DOUG 1: i added a global variable to store the robot's position (we'll need this to draw the robot in the right place, and this position will make it easier to check if things are close to the robot when we drag them around)
+
 function preload() {
   defaultfaceImg = loadImage("midterm_defaultface.png");
   withnailsImg = loadImage("withnails.png");
@@ -54,6 +57,8 @@ function setup() {
   imageMode(CENTER);
 
   //menu = new Thing(width - 50, 0, "menu", menuImg);
+
+  robotPosition = createVector(windowWidth / 2.2, windowHeight / 1.7) // DOUG 2: initialize the robotPosition with a vector using the values you used below
 
   nailpolish = new Thing(windowWidth * 9 / 10, 150, "nailpolish", nailpolishImg,withnailsImg);
   bouquet = new Thing( windowWidth * 9 / 10, 250, "bouquet", bouquetImg,withflowersImg);
@@ -94,19 +99,25 @@ function mouseReleased() {
   // MAKE ROBOT REACT IF ITEM IS DROPPED ON ROBOT
   // check if the active thing is near the robot
   // if it is, make robot react and return thing to its startPos
-  if(dist(activeThing.pos.x, activeThing.pos.y,mouseX, mouseY)< 10){
+
+  //if(dist(activeThing.pos.x, activeThing.pos.y, mouseX, mouseY)< 10){
+  // DOUG 3: the above commented out line was your original if-statement, which was checking the distance between the activeThing's position and the mouse position...the problem is, when a thing is active, it's being moved around using the mouse position, so its position and the mouse are equal to each other! So the distance between them will always be 0...which is less than 10 ;)
+
+  // DOUG 4: this line compares the location of the item to the location of the robot, using the new robotPosition variable I created above
+  if(dist(activeThing.pos.x, activeThing.pos.y, robotPosition.x, robotPosition.y) < 100) {
+
    robotState = activeThing.reactionImage;
     let time = 3000; 
     // change robot reaction image for X amount of time
+    
     function reaction(){
       robotState = defaultfaceImg;
     }
     setTimeout(reaction, time);
-  }else{
-    thing.pos = thing.startingpos;
   }
 
-  // if it is not, return thing to its startPos
+  activeThing.pos = activeThing.startPos // DOUG 5: return the thing to its starting position! All you have to do is set the activeThing's position to its own starting position.
+
 
   // deactivate everything
   pickedUp = false;
@@ -122,13 +133,12 @@ function draw() {
   //menu base
   image(menuImg, windowWidth * 9 / 10, windowHeight / 2, menuImg.width / 2, menuImg.height / 1.8);
 
-  image(robotState, windowWidth / 2.2, windowHeight / 1.7, robotState.width / 3.8, robotState.height / 3.8);
+  image(robotState, robotPosition.x, robotPosition.y, robotState.width / 3.8, robotState.height / 3.8); // DOUG 3: drawing the robot using "robotPosition.x" and "robotPosition.y" instead
 
+  // draw all the things, in reverse order of how they were added to the array in setup()
   for (let i = things.length - 1; i > 0; i--) {
     things[i].display()
   }
-
-
 }
 
 class Thing {
@@ -153,8 +163,5 @@ class Thing {
 
   display() {
     image(this.image, this.pos.x, this.pos.y, this.image.width * this.scale, this.image.height * this.scale)
-
-
   }
-
 }
